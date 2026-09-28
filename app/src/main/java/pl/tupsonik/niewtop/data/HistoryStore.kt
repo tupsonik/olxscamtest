@@ -6,27 +6,27 @@ import org.json.JSONObject
 
 object HistoryStore {
     private const val PREFS = "niewtop_history"
-    private const val KEY = "items"
-    private var context: Context? = null
+    private val contextRef = arrayOfNulls<Context>(1)
 
     fun init(appContext: Context) {
-        context = appContext.applicationContext
+        contextRef[0] = appContext.applicationContext
     }
 
-    fun add(item: AnalysisHistoryItem) {
+    fun add(item: AnalysisHistoryItem, userId: String?) {
         val prefs = requireContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val array = JSONArray(prefs.getString(KEY, "[]"))
+        val key = storageKey(userId)
+        val array = JSONArray(prefs.getString(key, "[]"))
         val output = JSONArray()
         output.put(toJson(item))
         for (i in 0 until minOf(array.length(), 49)) {
             output.put(array.getJSONObject(i))
         }
-        prefs.edit().putString(KEY, output.toString()).apply()
+        prefs.edit().putString(key, output.toString()).apply()
     }
 
-    fun list(): List<AnalysisHistoryItem> {
+    fun list(userId: String?): List<AnalysisHistoryItem> {
         val prefs = requireContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val array = JSONArray(prefs.getString(KEY, "[]"))
+        val array = JSONArray(prefs.getString(storageKey(userId), "[]"))
         return buildList {
             for (i in 0 until array.length()) {
                 val json = array.optJSONObject(i) ?: continue
@@ -46,6 +46,9 @@ object HistoryStore {
         }
     }
 
+    private fun storageKey(userId: String?): String =
+        "items_" + (userId?.takeIf { it.isNotBlank() } ?: "guest")
+
     private fun toJson(item: AnalysisHistoryItem) = JSONObject().apply {
         put("id", item.id)
         put("url", item.url)
@@ -58,5 +61,5 @@ object HistoryStore {
     }
 
     private fun requireContext(): Context =
-        context ?: error("HistoryStore.init() must be called from Application.onCreate().")
+        contextRef[0] ?: error("HistoryStore.init() must be called from Application.onCreate().")
 }
