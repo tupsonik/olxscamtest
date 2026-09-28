@@ -177,6 +177,7 @@ private fun NieWtopApp(
                                 analysis = result
                                 if (result.riskLevel != "UNKNOWN") {
                                     HistoryStore.add(AnalysisHistoryItem.from(result), SupabaseAuth.currentUser()?.id)
+                                    if (SupabaseAuth.currentUser() != null) CloudHistoryStore.save(result)
                                     screen = AppScreen.RESULT
                                 }
                             },
@@ -414,11 +415,10 @@ private fun HistoryScreen(
     LaunchedEffect(userSignedIn) {
         if (userSignedIn && SupabaseAuth.isConfigured()) {
             loading = true
-            CloudHistoryStore.load()
-                .onSuccess { cloudItems ->
-                    history = cloudItems
-                    cloudItems.forEach { HistoryStore.add(it, SupabaseAuth.currentUser()?.id) }
-                }
+            CloudHistoryStore.load().onSuccess { cloudItems ->
+                history = cloudItems
+                cloudItems.forEach { HistoryStore.add(it, SupabaseAuth.currentUser()?.id) }
+            }
             loading = false
         }
     }
