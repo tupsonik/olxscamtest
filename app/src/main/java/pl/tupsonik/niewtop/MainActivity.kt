@@ -176,7 +176,7 @@ private fun NieWtopApp(
                                 val result = OfferAnalyzer.analyze(url)
                                 analysis = result
                                 if (result.riskLevel != "UNKNOWN") {
-                                    HistoryStore.add(AnalysisHistoryItem.from(result))
+                                    HistoryStore.add(AnalysisHistoryItem.from(result), SupabaseAuth.currentUser()?.id)
                                     screen = AppScreen.RESULT
                                 }
                             },
@@ -406,7 +406,7 @@ private fun HistoryScreen(
     userSignedIn: Boolean,
     onOpen: (AnalysisHistoryItem) -> Unit
 ) {
-    val history = remember(userSignedIn) { HistoryStore.list() }
+    val history = remember(userSignedIn) { HistoryStore.list(SupabaseAuth.currentUser()?.id) }
 
     Column(
         Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 16.dp),
