@@ -406,7 +406,22 @@ private fun HistoryScreen(
     userSignedIn: Boolean,
     onOpen: (AnalysisHistoryItem) -> Unit
 ) {
-    val history = remember(userSignedIn) { HistoryStore.list(SupabaseAuth.currentUser()?.id) }
+    var history by remember(userSignedIn) {
+        mutableStateOf(HistoryStore.list(SupabaseAuth.currentUser()?.id))
+    }
+    var loading by remember(userSignedIn) { mutableStateOf(false) }
+
+    LaunchedEffect(userSignedIn) {
+        if (userSignedIn && SupabaseAuth.isConfigured()) {
+            loading = true
+            CloudHistoryStore.load()
+                .onSuccess { cloudItems ->
+                    history = cloudItems
+                    cloudItems.forEach { HistoryStore.add(it, SupabaseAuth.currentUser()?.id) }
+                }
+            loading = false
+        }
+    }
 
     Column(
         Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 16.dp),
@@ -414,11 +429,13 @@ private fun HistoryScreen(
     ) {
         Text("Historia", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
         Text(
-            if (userSignedIn) "Twoje ostatnie sprawdzenia." else "Historia lokalna. Zaloguj Google, żeby przygotować konto pod synchronizację.",
+            if (userSignedIn) "Twoje sprawdzenia z chmury Supabase." else "Historia lokalna. Zaloguj Google, żeby synchronizować ją z kontem.",
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        if (history.isEmpty()) {
+        if (loading) {
+            CircularProgressIndicator(Modifier.size(24.dp))
+        } else if (history.isEmpty()) {
             Card(
                 Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
@@ -438,7 +455,6 @@ private fun HistoryScreen(
         }
     }
 }
-
 @Composable
 private fun HistoryCard(item: AnalysisHistoryItem, onClick: () -> Unit) {
     val tone = when (item.riskLevel) {
