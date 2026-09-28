@@ -42,7 +42,7 @@ object SupabaseAuth {
 
     suspend fun signInWithGoogle() {
         check(configured) { "Supabase nie jest jeszcze skonfigurowane dla Nie Wtop." }
-        supabaseClient.auth.signInWith(Google)
+        supabaseClient.auth.loginWith(Google)
     }
 
     suspend fun signOut() {
