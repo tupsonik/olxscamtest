@@ -15,7 +15,7 @@ object SupabaseAuth {
         BuildConfig.SUPABASE_URL.isNotBlank() &&
         BuildConfig.SUPABASE_PUBLISHABLE_KEY.isNotBlank()
 
-    private val client: SupabaseClient by lazy {
+    private val supabaseClient: SupabaseClient by lazy {
         createSupabaseClient(
             supabaseUrl = BuildConfig.SUPABASE_URL,
             supabaseKey = BuildConfig.SUPABASE_PUBLISHABLE_KEY
@@ -32,20 +32,25 @@ object SupabaseAuth {
 
     fun isConfigured(): Boolean = configured
 
+    fun client(): SupabaseClient {
+        check(configured) { "Supabase nie jest jeszcze skonfigurowane dla Nie Wtop." }
+        return supabaseClient
+    }
+
     fun currentUser() =
-        if (configured) client.auth.currentUserOrNull() else null
+        if (configured) supabaseClient.auth.currentUserOrNull() else null
 
     suspend fun signInWithGoogle() {
         check(configured) { "Supabase nie jest jeszcze skonfigurowane dla Nie Wtop." }
-        client.auth.signInWith(Google)
+        supabaseClient.auth.signInWith(Google)
     }
 
     suspend fun signOut() {
-        if (configured) client.auth.signOut()
+        if (configured) supabaseClient.auth.signOut()
     }
 
     fun handleDeepLink(activity: ComponentActivity, intent: Intent?) {
         if (!configured || intent == null) return
-        client.handleDeeplinks(intent)
+        supabaseClient.handleDeeplinks(intent)
     }
 }
