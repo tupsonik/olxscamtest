@@ -177,7 +177,7 @@ private fun NieWtopApp(
                                 analysis = result
                                 if (result.riskLevel != "UNKNOWN") {
                                     HistoryStore.add(AnalysisHistoryItem.from(result), SupabaseAuth.currentUser()?.id)
-                                    if (SupabaseAuth.currentUser() != null) CloudHistoryStore.save(result)
+                                    if (SupabaseAuth.currentUser() != null) scope.launch { CloudHistoryStore.save(result) }
                                     screen = AppScreen.RESULT
                                 }
                             },
