@@ -1,11 +1,23 @@
 package pl.tupsonik.niewtop.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 object CloudHistoryStore {
+    @Serializable
+    private data class AnalysisInsert(
+        val id: String,
+        @SerialName("user_id") val userId: String,
+        @SerialName("input_type") val inputType: String,
+        @SerialName("normalized_url") val normalizedUrl: String? = null,
+        val platform: String? = null,
+        @SerialName("risk_level") val riskLevel: String,
+        val confidence: String,
+        val summary: String
+    )
+
     @Serializable
     private data class AnalysisRow(
         val id: String,
@@ -22,19 +34,20 @@ object CloudHistoryStore {
     suspend fun save(analysis: OfferAnalysis): Result<Unit> = runCatching {
         val user = SupabaseAuth.currentUser() ?: error("Brak zalogowanego użytkownika.")
 
-        val row = AnalysisRow(
-            id = java.util.UUID.randomUUID().toString(),
-            userId = user.id,
-            inputType = "url",
-            normalizedUrl = analysis.url,
-            platform = analysis.platform,
-            riskLevel = analysis.riskLevel,
-            confidence = analysis.confidence,
-            summary = analysis.summary,
-            createdAt = ""
-        )
-
-        SupabaseAuth.client().from("analyses").insert(row)
+        SupabaseAuth.client()
+            .from("analyses")
+            .insert(
+                AnalysisInsert(
+                    id = java.util.UUID.randomUUID().toString(),
+                    userId = user.id,
+                    inputType = "url",
+                    normalizedUrl = analysis.url,
+                    platform = analysis.platform,
+                    riskLevel = analysis.riskLevel,
+                    confidence = analysis.confidence,
+                    summary = analysis.summary
+                )
+            )
     }
 
     suspend fun load(limit: Int = 50): Result<List<AnalysisHistoryItem>> = runCatching {
@@ -47,31 +60,31 @@ object CloudHistoryStore {
                 limit(limit)
             }
             .decodeList<AnalysisRow>()
-            .map {
-                val host = it.normalizedUrl?.let { url ->
+            .map { row ->
+                val host = row.normalizedUrl?.let { url ->
                     runCatching { java.net.URI(url).host.orEmpty() }.getOrDefault("")
                 }.orEmpty()
 
                 AnalysisHistoryItem(
-                    id = it.id,
-                    url = it.normalizedUrl.orEmpty(),
-                    title = host.ifBlank { it.platform ?: "Sprawdzona oferta" },
+                    id = row.id,
+                    url = row.normalizedUrl.orEmpty(),
+                    title = host.ifBlank { row.platform ?: "Sprawdzona oferta" },
                     host = host,
-                    riskLevel = it.riskLevel,
-                    riskLabel = when (it.riskLevel) {
+                    riskLevel = row.riskLevel,
+                    riskLabel = when (row.riskLevel) {
                         "HIGH" -> "Wysokie ryzyko"
                         "CAUTION" -> "Uwaga"
                         "LOW" -> "Niskie ryzyko"
                         else -> "Nieznane"
                     },
-                    icon = when (it.riskLevel) {
+                    icon = when (row.riskLevel) {
                         "HIGH" -> "⚠️"
                         "CAUTION" -> "🟡"
                         "LOW" -> "🟢"
                         else -> "❔"
                     },
                     createdAt = runCatching {
-                        java.time.Instant.parse(it.createdAt).toEpochMilli()
+                        java.time.Instant.parse(row.createdAt).toEpochMilli()
                     }.getOrDefault(System.currentTimeMillis())
                 )
             }
