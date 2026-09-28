@@ -12,7 +12,7 @@ val localProperties = Properties().apply {
 }
 
 fun escaped(value: String): String =
-    value.replace("\\", "\\\\").replace(""", "\"")
+    value.replace("\\", "\\\\").replace("\"", "\\\"")
 
 android {
     namespace = "pl.tupsonik.niewtop"
@@ -25,16 +25,8 @@ android {
         versionCode = 3
         versionName = "0.3.0"
 
-        buildConfigField(
-            "String",
-            "SUPABASE_URL",
-            ""${escaped(localProperties.getProperty("SUPABASE_URL", ""))}""
-        )
-        buildConfigField(
-            "String",
-            "SUPABASE_PUBLISHABLE_KEY",
-            ""${escaped(localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", ""))}""
-        )
+        buildConfigField("String", "SUPABASE_URL", "\"${escaped(localProperties.getProperty("SUPABASE_URL", ""))}\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"${escaped(localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", ""))}\"")
     }
 
     buildFeatures {
