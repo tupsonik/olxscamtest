@@ -53,10 +53,23 @@ jobs:
           profile: pixel_2
           cores: 2
           ram-size: 2048M
+          heap-size: 512M
           disable-animations: true
           force-avd-creation: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          wipe-data: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -camera-back none
           script: |
+            adb kill-server || true
+            adb start-server
+            adb reconnect
+            adb wait-for-device
+            for i in $(seq 1 30); do
+              STATE=$(adb get-state 2>/dev/null || true)
+              if [ "$STATE" = "device" ]; then break; fi
+              adb reconnect || true
+              sleep 2
+            done
+            adb get-state
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -n pl.tupsonik.flappysteroids/.MainActivity
             sleep 2
