@@ -23,7 +23,8 @@ class CollisionTest {
 
     @Test
     fun circleRect_tangentCountsAsCollision() {
-        assertTrue(Collision.circleIntersectsRect(0.2f, 0.5f, 0.1f, 0.3f, 0.4f, 0.6f, 0.6f))
+        assertTrue(Collision.circleIntersectsRect(0.25f, 0.50f, 0.25f, 0.50f, 0.25f, 0.75f, 0.75f))
+        assertFalse(Collision.circleIntersectsRect(0.25f, 0.50f, 0.24f, 0.50f, 0.25f, 0.75f, 0.75f))
     }
 
     @Test
