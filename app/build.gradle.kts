@@ -1,34 +1,22 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-}
-
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) file.inputStream().use(::load)
 }
 
 android {
-    namespace = "pl.tupsonik.niewtop"
+    namespace = "pl.tupsonik.flappysteroids"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "pl.tupsonik.niewtop"
+        applicationId = "pl.tupsonik.flappysteroids"
         minSdk = 26
         targetSdk = 35
-        versionCode = 6
-        versionName = "0.6.0"
-
-        buildConfigField("String", "SUPABASE_URL", "\"" + localProperties.getProperty("SUPABASE_URL", "") + "\"")
-        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"" + localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", "") + "\"")
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 
     packaging {
@@ -48,10 +36,4 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
-
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.8.0"))
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.ktor:ktor-client-android:3.3.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
