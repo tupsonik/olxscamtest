@@ -43,6 +43,40 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon testDebugUnitTest assembleDebug
 
+      - name: Runtime smoke test on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -n pl.tupsonik.flappysteroids/.MainActivity
+            sleep 2
+            adb exec-out screencap -p > flappy-menu.png
+            adb shell input tap 540 960
+            sleep 1
+            for i in $(seq 1 24); do
+              adb shell input tap 540 960
+              sleep 0.12
+            done
+            adb exec-out screencap -p > flappy-playing.png
+            adb shell am force-stop pl.tupsonik.flappysteroids
+
+      - name: Upload runtime screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlappySteroids-runtime-screens
+          path: |
+            flappy-menu.png
+            flappy-playing.png
+            app/build/reports/tests/**
+          if-no-files-found: ignore
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
