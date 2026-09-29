@@ -16,17 +16,17 @@ fun escaped(value: String): String =
 
 android {
     namespace = "pl.tupsonik.niewtop"
-    compileSdk = 37.2
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "pl.tupsonik.niewtop"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
 
-        buildConfigField("String", "SUPABASE_URL", "\"${escaped(localProperties.getProperty("SUPABASE_URL", ""))}\"")
-        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"${escaped(localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", ""))}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"\${escaped(localProperties.getProperty("SUPABASE_URL", ""))}\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"\${escaped(localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", ""))}\"")
     }
 
     buildFeatures {
