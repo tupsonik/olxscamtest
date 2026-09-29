@@ -43,6 +43,13 @@ jobs:
       - name: Build debug APK
         run: gradle --no-daemon testDebugUnitTest assembleDebug
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlappySteroids-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
       - name: Runtime smoke test on Android emulator
         timeout-minutes: 8
         uses: reactivecircus/android-emulator-runner@v2
@@ -94,9 +101,3 @@ jobs:
             app/build/reports/tests/**
           if-no-files-found: ignore
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: FlappySteroids-debug
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
