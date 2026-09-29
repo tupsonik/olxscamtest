@@ -44,13 +44,17 @@ jobs:
         run: gradle --no-daemon testDebugUnitTest assembleDebug
 
       - name: Runtime smoke test on Android emulator
+        timeout-minutes: 8
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
-          target: google_apis
+          api-level: 34
+          target: default
           arch: x86_64
           profile: pixel_2
+          cores: 2
+          ram-size: 2048M
           disable-animations: true
+          force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             adb install -r app/build/outputs/apk/debug/app-debug.apk
