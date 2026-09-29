@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -122,6 +123,7 @@ private fun NieWtopApp(
     var url by remember { mutableStateOf("") }
     var analysis by remember { mutableStateOf<OfferAnalysis?>(null) }
     var signedIn by remember(authTick) { mutableStateOf(SupabaseAuth.currentUser() != null) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(sharedOffer) {
         if (sharedOffer.isNotBlank()) {
@@ -293,7 +295,7 @@ private fun CheckScreen(
         Text("Możesz też", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AssistChip(
-                onClick = { launcher.launch(ActivityResultContracts.PickVisualMedia.ImageOnly) },
+                onClick = { launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 label = { Text("📷 Screenshot") }
             )
             AssistChip(
