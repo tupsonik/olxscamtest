@@ -57,7 +57,7 @@ object CloudHistoryStore {
             .from("analyses")
             .select {
                 order("created_at", Order.DESCENDING)
-                limit(limit)
+                limit(limit.toLong())
             }
             .decodeList<AnalysisRow>()
             .map { row ->
