@@ -16,7 +16,7 @@ fun escaped(value: String): String =
 
 android {
     namespace = "pl.tupsonik.niewtop"
-    compileSdk = 35
+    compileSdk = 37.2
 
     defaultConfig {
         applicationId = "pl.tupsonik.niewtop"
