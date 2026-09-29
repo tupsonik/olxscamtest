@@ -1,14 +1,16 @@
-# Nie Wtop 🛡️
+# Flappy Steroids 🐦💥
 
-Android app for checking online offers before paying.
+Telefonowa gra arcade inspirowana Flappy Birdem, ale mocno podkręcona.
 
-## MVP
-- Paste an offer URL
-- Analyze a screenshot
-- Explain risk signals
-- Evidence-based results
+## Gameplay
+- tap = flap
+- przeszkody z rosnącą prędkością
+- combo i mnożnik punktów
+- monety
+- tarcza pochłaniająca jedną kolizję
+- boost zwiększający tempo punktowania
+- zmieniające się tło
+- rekord zapisywany lokalnie
+- ekran startu i game over
 
-## Planned stack
-- Kotlin / Jetpack Compose
-- Supabase
-- AI-assisted analysis
+Projekt jest samodzielną aplikacją Android. Nie korzysta z Supabase ani z zewnętrznego backendu.
