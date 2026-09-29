@@ -1,4 +1,4 @@
-name: Build Nie Wtop APK
+name: Build Flappy Steroids APK
 
 on:
   workflow_dispatch:
@@ -24,13 +24,13 @@ jobs:
 
       - name: Prepare Android SDK
         run: |
-          SDK_ROOT=${ANDROID_HOME:-/usr/local/lib/android/sdk}
+          SDK_ROOT=\${ANDROID_HOME:-/usr/local/lib/android/sdk}
           echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
           echo "$SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
 
-      - name: Verify preinstalled Android SDK
+      - name: Verify Android SDK
         run: |
           sdkmanager --list_installed | head -80
           ls -d "$ANDROID_HOME/platforms/"* "$ANDROID_HOME/build-tools/"*
@@ -40,19 +40,12 @@ jobs:
         with:
           gradle-version: '9.6.0'
 
-      - name: Configure local Supabase settings
-        run: |
-          cat > local.properties <<'EOF'
-          SUPABASE_URL=https://byqyfvqeelmdccprbsnd.supabase.co
-          SUPABASE_PUBLISHABLE_KEY=sb_publishable_wbhN3Yj4KeE9w2NQ5gndvA_NgGdxzX6
-          EOF
-
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NieWtop-debug
+          name: FlappySteroids-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
