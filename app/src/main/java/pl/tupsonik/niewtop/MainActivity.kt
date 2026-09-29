@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import pl.tupsonik.niewtop.data.AnalysisHistoryItem
+import pl.tupsonik.niewtop.data.CloudHistoryStore
 import pl.tupsonik.niewtop.data.HistoryStore
 import pl.tupsonik.niewtop.data.OfferAnalysis
 import pl.tupsonik.niewtop.data.OfferAnalyzer
