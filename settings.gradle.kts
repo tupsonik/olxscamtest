@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NieWtop"
+rootProject.name = "FlappySteroids"
 include(":app")
