@@ -119,71 +119,73 @@ private fun FlappySteroidsApp() {
 
 @Composable
 private fun RowHud(game: GameState, best: Int) {
-    Column(
-        modifier = Modifier
-            .align(Alignment.TopStart)
-            .padding(start = 18.dp, top = 22.dp)
-    ) {
-        Text(
-            text = "BEST " + best,
-            color = Color(0xFFB9C5DF),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "COINS " + game.coins,
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 18.dp, top = 22.dp)
+        ) {
+            Text(
+                text = "BEST " + best,
+                color = Color(0xFFB9C5DF),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "COINS " + game.coins,
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
 
-    Column(
-        modifier = Modifier
-            .align(Alignment.TopEnd)
-            .padding(end = 18.dp, top = 22.dp),
-        horizontalAlignment = Alignment.End
-    ) {
-        if (game.multiplier > 1) {
-            Text(
-                text = "COMBO x" + game.multiplier,
-                color = Color(0xFFFFD166),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-        if (game.shield) {
-            Text(
-                text = "SHIELD",
-                color = Color(0xFF62D9FF),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-        if (game.boostTimer > 0f) {
-            Text(
-                text = "BOOST " + game.boostTimer.format1() + "s",
-                color = Color(0xFFFFD166),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-        if (game.magnetTimer > 0f) {
-            Text(
-                text = "MAGNET",
-                color = Color(0xFF9D8CFF),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-        if (game.slowTimer > 0f) {
-            Text(
-                text = "SLOWMO",
-                color = Color(0xFF62FFE3),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Black
-            )
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(end = 18.dp, top = 22.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            if (game.multiplier > 1) {
+                Text(
+                    text = "COMBO x" + game.multiplier,
+                    color = Color(0xFFFFD166),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            if (game.shield) {
+                Text(
+                    text = "SHIELD",
+                    color = Color(0xFF62D9FF),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            if (game.boostTimer > 0f) {
+                Text(
+                    text = "BOOST " + game.boostTimer.format1() + "s",
+                    color = Color(0xFFFFD166),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            if (game.magnetTimer > 0f) {
+                Text(
+                    text = "MAGNET",
+                    color = Color(0xFF9D8CFF),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            if (game.slowTimer > 0f) {
+                Text(
+                    text = "SLOWMO",
+                    color = Color(0xFF62FFE3),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
         }
     }
 }
