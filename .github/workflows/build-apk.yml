@@ -30,10 +30,10 @@ jobs:
           echo "$SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
 
-      - name: Install Android SDK packages
+      - name: Verify preinstalled Android SDK
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platforms;android-37" "build-tools;36.0.0" "platform-tools"
+          sdkmanager --list_installed | head -80
+          ls -d "$ANDROID_HOME/platforms/"* "$ANDROID_HOME/build-tools/"*
 
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v5
