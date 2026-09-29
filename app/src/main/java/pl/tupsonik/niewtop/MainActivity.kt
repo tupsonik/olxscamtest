@@ -2,9 +2,6 @@ package pl.tupsonik.flappysteroids
 
 import android.content.Context
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
@@ -39,16 +36,9 @@ import kotlin.math.cos
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hideSystemBars(window)
         setContent { FlappySteroidsApp() }
     }
 
-    private fun hideSystemBars(window: Window) {
-        window.insetsController?.let {
-            it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-            it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-    }
 }
 
 @Composable
