@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.FlowType
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.handleDeeplinks
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.ktor.client.engine.android.Android
+import pl.tupsonik.niewtop.BuildConfig
 
 object SupabaseAuth {
     private val configured =
@@ -42,7 +45,7 @@ object SupabaseAuth {
 
     suspend fun signInWithGoogle() {
         check(configured) { "Supabase nie jest jeszcze skonfigurowane dla Nie Wtop." }
-        supabaseClient.auth.loginWith(Google)
+        supabaseClient.auth.signInWith(Google)
     }
 
     suspend fun signOut() {
