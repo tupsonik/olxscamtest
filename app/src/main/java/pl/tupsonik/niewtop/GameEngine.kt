@@ -47,7 +47,8 @@ data class GameState(
     val magnetTimer: Float = 0f,
     val slowTimer: Float = 0f,
     val shakeTimer: Float = 0f,
-    val worldTime: Float = 0f
+    val worldTime: Float = 0f,
+    val spawnTimer: Float = 0.7f
 )
 
 class GameEngine(seed: Int = 1) {
@@ -56,7 +57,7 @@ class GameEngine(seed: Int = 1) {
         private set
 
     fun start() {
-        state = GameState(status = GameStatus.PLAYING, birdY = 0.5f, score = 0, coins = 0)
+        state = GameState(status = GameStatus.PLAYING, birdY = 0.5f, score = 0, coins = 0, spawnTimer = 0.70f)
     }
 
     fun flap() {
@@ -86,11 +87,12 @@ class GameEngine(seed: Int = 1) {
         var slowTimer = max(0f, state.slowTimer - dt)
         var shakeTimer = max(0f, state.shakeTimer - dt)
         var worldTime = state.worldTime + dt
+        var spawnTimer = state.spawnTimer
 
         val slowFactor = if (slowTimer > 0f) 0.62f else 1f
         val difficulty = min(2.25f, 1f + score * 0.014f)
         val speed = 0.0075f * difficulty *
-            if (boostTimer > 0f) 1.18f else 1f *
+            (if (boostTimer > 0f) 1.18f else 1f) *
             slowFactor
         val gravity = 0.00062f * slowFactor
         val gap = max(0.215f, 0.36f - score * 0.0025f)
@@ -98,7 +100,6 @@ class GameEngine(seed: Int = 1) {
         velocity += gravity
         birdY += velocity
 
-        var spawnTimer = stateShakeSpawnTimer(state)
         spawnTimer -= dt
 
         if (spawnTimer <= 0f) {
@@ -245,7 +246,8 @@ class GameEngine(seed: Int = 1) {
                 magnetTimer = magnetTimer,
                 slowTimer = slowTimer,
                 shakeTimer = max(shakeTimer, 0.20f),
-                worldTime = worldTime
+                worldTime = worldTime,
+                spawnTimer = spawnTimer
             )
             return
         }
@@ -265,18 +267,10 @@ class GameEngine(seed: Int = 1) {
             magnetTimer = magnetTimer,
             slowTimer = slowTimer,
             shakeTimer = shakeTimer,
-            worldTime = worldTime
+            worldTime = worldTime,
+            spawnTimer = spawnTimer
         )
-
-        // Preserve a deterministic timer without exposing it to the UI state.
-        timers[stateHashKey] = spawnTimer
     }
-
-    private val stateHashKey = Any()
-    private val timers = mutableMapOf<Any, Float>()
-
-    private fun stateShakeSpawnTimer(current: GameState): Float =
-        timers[stateHashKey] ?: 0.7f
 
     private fun burst(x: Float, y: Float, count: Int): List<Spark> =
         List(count) {
