@@ -11,9 +11,6 @@ val localProperties = Properties().apply {
     if (file.exists()) file.inputStream().use(::load)
 }
 
-fun escaped(value: String): String =
-    value.replace("\\", "\\\\").replace(""", "\"")
-
 android {
     namespace = "pl.tupsonik.niewtop"
     compileSdk = 37
@@ -22,19 +19,11 @@ android {
         applicationId = "pl.tupsonik.niewtop"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "0.5.0"
+        versionCode = 6
+        versionName = "0.6.0"
 
-        buildConfigField(
-            "String",
-            "SUPABASE_URL",
-            "\"" + escaped(localProperties.getProperty("SUPABASE_URL", "")) + "\""
-        )
-        buildConfigField(
-            "String",
-            "SUPABASE_PUBLISHABLE_KEY",
-            "\"" + escaped(localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", "")) + "\""
-        )
+        buildConfigField("String", "SUPABASE_URL", "\"" + localProperties.getProperty("SUPABASE_URL", "") + "\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"" + localProperties.getProperty("SUPABASE_PUBLISHABLE_KEY", "") + "\"")
     }
 
     buildFeatures {
