@@ -44,7 +44,7 @@ jobs:
         run: |
           cat > local.properties <<'EOF'
           SUPABASE_URL=https://byqyfvqeelmdccprbsnd.supabase.co
-          SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_PUBLISHABLE_KEY=sb_publishable_wbhN3Yj4KeE9w2NQ5gndvA_NgGdxzX6
           EOF
 
       - name: Build debug APK
