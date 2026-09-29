@@ -159,8 +159,9 @@ class GameEngine(seed: Int = 1) {
 
         if (!hit) {
             for (pipe in pipes) {
-                val left = pipe.x
-                val right = pipe.x + pipe.width
+                // Collision matches the visible pipe cap, which extends beyond the body.
+                val left = pipe.x - 0.008f
+                val right = pipe.x + pipe.width + 0.008f
                 val gapTop = pipe.gapCenter - pipe.gapSize / 2f
                 val gapBottom = pipe.gapCenter + pipe.gapSize / 2f
 
