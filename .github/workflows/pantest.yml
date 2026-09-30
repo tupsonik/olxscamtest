@@ -1,5 +1,7 @@
 name: Pantest Lab
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       target:
@@ -18,7 +20,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Resolve target
@@ -26,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "schedule" ]; then target="$(head -n1 targets.txt)"; else target="${{ inputs.target }}"; fi
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "push" ]; then target="$(head -n1 targets.txt)"; else target="${{ inputs.target }}"; fi
           python3 - "$target" <<'PY'
           import sys, urllib.parse
           u=urllib.parse.urlparse(sys.argv[1])
@@ -35,13 +37,12 @@ jobs:
           PY
           echo "TARGET=$target" >> "$GITHUB_OUTPUT"
       - name: Install scanners
-        run: sudo apt-get update && sudo apt-get install -y nmap dnsutils
+        run: sudo apt-get update && sudo apt-get install -y nmap dnsutils openssl
       - name: Run HTTP/network audit
         run: |
           mkdir -p artifacts
           bash scripts/audit.sh '${{ steps.target.outputs.TARGET }}' artifacts
       - name: OWASP ZAP baseline
-        if: ${{ github.event_name == 'schedule' || inputs.zap }}
         run: |
           mkdir -p artifacts/zap
           docker run --rm -v "$PWD/artifacts/zap:/zap/wrk/:rw" ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t '${{ steps.target.outputs.TARGET }}' -r zap-report.html -J zap-report.json -I || true
