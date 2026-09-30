@@ -1,0 +1,54 @@
+name: Pantest Lab
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Authorized target URL"
+        required: false
+        default: "http://pasieka.hstn.me/pasieka.php?i=1"
+      zap:
+        description: "Run OWASP ZAP baseline"
+        required: false
+        type: boolean
+        default: true
+  schedule:
+    - cron: "17 3 * * *"
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "schedule" ]; then target="$(head -n1 targets.txt)"; else target="${{ inputs.target }}"; fi
+          python3 - "$target" <<'PY'
+          import sys, urllib.parse
+          u=urllib.parse.urlparse(sys.argv[1])
+          if u.hostname != "pasieka.hstn.me": raise SystemExit("Target rejected")
+          if u.scheme not in ("http","https"): raise SystemExit("HTTP/HTTPS required")
+          PY
+          echo "TARGET=$target" >> "$GITHUB_OUTPUT"
+      - name: Install scanners
+        run: sudo apt-get update && sudo apt-get install -y nmap dnsutils
+      - name: Run HTTP/network audit
+        run: |
+          mkdir -p artifacts
+          bash scripts/audit.sh '${{ steps.target.outputs.TARGET }}' artifacts
+      - name: OWASP ZAP baseline
+        if: ${{ github.event_name == 'schedule' || inputs.zap }}
+        run: |
+          mkdir -p artifacts/zap
+          docker run --rm -v "$PWD/artifacts/zap:/zap/wrk/:rw" ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t '${{ steps.target.outputs.TARGET }}' -r zap-report.html -J zap-report.json -I || true
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pantest-${{ github.run_number }}
+          path: artifacts/
+          retention-days: 30
